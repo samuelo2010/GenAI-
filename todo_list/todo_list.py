@@ -1,6 +1,14 @@
 import random
 
 # Sample motivational tips
+AI_TIPS = [
+    "Break big tasks into smaller steps.",
+    "Set a timer and focus for 25 minutes.",
+    "Reward yourself after completing a task.",
+    "Visualize the benefits of finishing your work.",
+    "Remove distractions before you start."
+]
+
 class Task:
     def __init__(self, description):
         self.description = description

@@ -15,7 +15,7 @@ A modular, graph-based task manager built in [JacLang](https://www.jac-lang.org/
 ---
 
 ## 📁 Project Structure
-
+├──smart_todo.py #adopted python code for imlementing smart todo list
 ├── smart_todo.jac # Object and walker definitions
 ├── smart_todo.impl.jac # Logic implementation 
 ├── README.md
@@ -32,7 +32,10 @@ A modular, graph-based task manager built in [JacLang](https://www.jac-lang.org/
 
 ## 🛠️ How to Run Locally
 
-1. **Install JacLang**
+1.**clone repo**
+git clone https://github.com/samuelo2010/GenAI-/tree/main/todo_list
+
+2.**Install JacLang**
    ```bash
    pip install jaclang
 
