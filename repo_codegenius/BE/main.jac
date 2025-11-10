@@ -47,8 +47,8 @@ node RepoMapper {
 node CodeAnalyzer {
     # ... (CodeAnalyzer logic remains the same, but would use a Tree-sitter Python module) ...
     has repo_path: str;
-    has ccg: str = "";
     has file_to_analyze: str;
+    has ccg: str = "";
     
     # byllm function for code analysis and CCG construction
     # This would internally call a Python module for Tree-sitter parsing
@@ -56,19 +56,17 @@ node CodeAnalyzer {
 
     can execute with CodeGenius entry {
         #... (Implementation remains the same) ...
+    
         analysis_result = self.analyze_and_build_ccg(self.repo_path, self.file_to_analyze);
-        self.ccg = analysis_result.ccg;
-        
+        self.ccg = analysis_result.ccg;    
         report {
             "ccg": self.ccg,
             "dependencies": analysis_result.dependencies,
-            "status": "COMPLETED"
+            "status": "COMPLETED"     
         };
-    }
 }
-
+}
 node DocGenie {    
-    #... (DocGenie logic remains the same) ...
     has aggregated_docs: dict;
     has final_documentation: str = "";
     def assemble_final_report(aggregated_docs: dict) -> str byllm();
@@ -96,10 +94,10 @@ walker CodeGenius {
         print("[CodeGenius] Validating repository URL...");
         validation_result = validate_repo_url(self.repo_url);
         
-        if validation_result.status == "ERROR":
+        if validation_result.status == "ERROR"{
             print("Pipeline failed: " + validation_result.message);
             report {"status": "ERROR", "message": validation_result.message};
-            disengage;
+            return;}
 
         # 1.2. Cloning (Delegated to Python)
         print("[CodeGenius] Cloning repository...");
@@ -108,10 +106,10 @@ walker CodeGenius {
         
         clone_result = clone_repository(self.repo_url, local_path);
         
-        if clone_result.status == "ERROR":
+        if clone_result.status == "ERROR"{
             print("Pipeline failed: " + clone_result.message);
             report {"status": "ERROR", "message": clone_result.message};
-            disengage;
+            return;}
             
         self.repo_path = clone_result.path;
 
@@ -122,10 +120,10 @@ walker CodeGenius {
         
         repo_map_result = report_from(mapper_node);
         
-        if repo_map_result.status == "ERROR":
+        if repo_map_result.status == "ERROR"{
             print("Pipeline failed during Repo Mapping.");
             report {"status": "ERROR", "message": "Repo Mapping failed."};
-            disengage;
+            return;}
 
         file_tree = repo_map_result.file_tree;
         readme_summary = repo_map_result.readme_summary;
@@ -136,24 +134,27 @@ walker CodeGenius {
 
         # 1.5. Iterative Analysis Loop
         # ... (Loop logic remains the same) ...
-        while self.analysis_queue.len() > 0:
+        while len(self.analysis_queue) > 0{
             current_file = self.analysis_queue.pop_front();
             
             # ... (Delegation to CodeAnalyzer and aggregation) ...
             analyzer_node = here ++> CodeAnalyzer(repo_path=self.repo_path, file_to_analyze=current_file);
             visit analyzer_node;
             
-            analysis_result = report_from(analyzer_node);
+            analysis_result = report_from(analyzer_node);}
             
-            if analysis_result.status == "COMPLETED":
+            if analysis_result.status == "COMPLETED"{
                 self.aggregated_docs[current_file] = analysis_result.ccg;
                 self.documented_files.add(current_file);
                 
-                for dep_file in analysis_result.dependencies:
-                    if dep_file not in self.documented_files and dep_file not in self.analysis_queue:
-                        self.analysis_queue.push_back(dep_file);
-            else:
-                print("Analysis failed for " + current_file);
+                for dep_file in analysis_result.dependencies{
+                    if dep_file not in self.documented_files and dep_file not in self.analysis_queue{
+                        self.analysis_queue.push_back(dep_file);}}
+            
+            
+            else {
+                    print(f"Analysis failed for  + {current_file}");
+            }
 
         # 1.6. Documentation Generation (Delegation to DocGenie)
         print("[CodeGenius] Delegating to DocGenie for final assembly...");
@@ -163,20 +164,18 @@ walker CodeGenius {
         final_doc_result = report_from(docgenie_node);
         
         # 1.7. Final Output
-        if final_doc_result.status == "COMPLETED":
+            if final_doc_result.status == "COMPLETED" {
             print("Final Documentation Generated.");
             # Final report to the API interface
             report {
                 "status": "SUCCESS",
                 "documentation": final_doc_result.documentation
             };
-        else:
+        } else {
             print("Final documentation failed.");
             report {"status": "ERROR", "message": "Final documentation failed."};
-    }
+    }}
     
-    # Helper functions for byLLM prioritization (omitted for brevity)
-    def prioritize_files(file_tree: str, readme_summary: str) -> list by llm();
-    
-}
+        
+}}
 

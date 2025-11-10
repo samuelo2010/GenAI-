@@ -19,9 +19,9 @@ The backend logic is split between Jac code for orchestration and Python code fo
 
 | File | Description |
 | :--- | :--- |
-| `final_backend_pseudocode.jac` | Contains the core Jac code: `CodeGenius` walker, `RepoMapper`, `CodeAnalyzer`, and `DocGenie` nodes. This is the main orchestration logic. |
+| 'main.jac` | Contains the core Jac code: `CodeGenius` walker, `RepoMapper`, `CodeAnalyzer`, and `DocGenie` nodes. This is the main orchestration logic. |
 | `repo_utils.py` | Python utility module for system-level tasks: URL validation, Git cloning, and file-tree generation. This module is imported by the Jac code using `py_module`. |
-| `tree_sitter_utils.py` (Hypothetical) | Python module that would contain the actual code for parsing source files and building the CCG using a library like Tree-sitter. |
+
 
 ## 3. Setup and Deployment
 
@@ -41,8 +41,8 @@ The backend logic is split between Jac code for orchestration and Python code fo
 2.  **Deploy Jac Code:** Load the Jac files into your Jac runtime environment.
     ```bash
     # Example using Jaseci CLI
-    jsctl start
-    jsctl jac load final_backend_pseudocode.jac
+    jac run main.jac
+    streamlit run streamlit_app.py
     ```
 3.  **Ensure Python Module is Accessible:** The `repo_utils.py` file must be in a location accessible by the Jac runtime (e.g., the same directory or configured in the Python path).
 4.  **Start the Jac Server:** Ensure the Jac server is running and accessible, typically on `http://localhost:8000`. This server exposes the `/walker/CodeGenius` API endpoint used by the frontend.
